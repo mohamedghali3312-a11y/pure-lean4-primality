@@ -20,8 +20,9 @@ theorem proth_composite_1281_rejected :
 
 /-- Test 4 (Noyau Lean decide) : Cohérence exacte de modPowFuel rapide sur p = 257 -/
 theorem fermat_F3_modPow_exact :
-    modPowFuel 257 3 128 257 = 256 := by
+    modPowFuel 64 3 128 257 = 256 := by
   decide
+
 
 /-- Banc d'essai natif GMP 64 bits (exécuté en < 1 ms) -/
 #eval isProthWitness 5 (3 * 2 ^ 30 + 1)
