@@ -36,7 +36,7 @@ theorem exists_prime_factor : ∀ n : Nat, 2 ≤ n → ∃ p : Nat, IsPrime p �
       exact ⟨p, hp_prime, Nat.dvd_trans hp_dvd_d hd_dvd⟩
 
 /-- Lemme auxiliaire : si p ∣ x * b et p ∣ q * b, alors p ∣ (x % q) * b -/
-theorem dvd_mod_mul_of_dvd {p q x b : Nat} (hq_pos : 0 < q)
+theorem dvd_mod_mul_of_dvd {p q x b : Nat}
     (hxb : p ∣ x * b) (hqb : p ∣ q * b) : p ∣ (x % q) * b := by
   have h_eq : q * (x / q) + x % q = x := Nat.div_add_mod x q
   have h_mul : q * (x / q) * b + (x % q) * b = x * b := by
@@ -64,7 +64,7 @@ theorem euclid_lemma {p a b : Nat} (hp : IsPrime p) (hab : p ∣ a * b) : p ∣ 
       · exact absurd (Nat.dvd_of_mod_eq_zero hz) hpa
       · exact hpos
     have hr0_dvd : p ∣ (a % p) * b :=
-      dvd_mod_mul_of_dvd hp_pos hab (Nat.dvd_mul_right p b)
+      dvd_mod_mul_of_dvd hab (Nat.dvd_mul_right p b)
     suffices h_desc : ∀ m : Nat, 0 < m → m < p → p ∣ m * b → p ∣ b from
       h_desc (a % p) hr0_pos hr0_lt hr0_dvd
     intro m
@@ -83,7 +83,7 @@ theorem euclid_lemma {p a b : Nat} (hp : IsPrime p) (hab : p ∣ a * b) : p ∣ 
           · exact absurd (Nat.dvd_of_mod_eq_zero hz) hm_dvd_p
           · exact hpos
         have hr_dvd : p ∣ (p % m) * b :=
-          dvd_mod_mul_of_dvd hm_pos (Nat.dvd_mul_right p b) hmb
+          dvd_mod_mul_of_dvd (Nat.dvd_mul_right p b) hmb
         exact ih (p % m) hr_lt hr_pos (Nat.lt_trans hr_lt hm_lt) hr_dvd
 
 /-- 3. Annulation modulaire modulo p premier -/
@@ -201,8 +201,6 @@ def modPowFuel : Nat → Nat → Nat → Nat → Nat
 /-- 7. Critère exécutable de témoin de Proth : a^((p-1)/2) ≡ p - 1 [MOD p] -/
 def isProthWitness (a p : Nat) : Bool :=
   2 < p && p % 2 == 1 && modPowFuel 64 a ((p - 1) / 2) p == p - 1
-
-
 
 #print axioms exists_prime_factor
 #print axioms euclid_lemma
