@@ -170,15 +170,14 @@ theorem modPow_correct (a e m : Nat) (hm : 1 < m) : modPow a e m = (a ^ e) % m :
       · rw [heven]
         simp only [↓reduceIte]
         rw [mod_pow_two_mul]
-        have h_div : 2 * ((e + 1) / 2) = e + 1 := by omega
-        rw [h_div]
+        exact congrArg (fun k => a ^ k % m) (by omega)
       · have heven_f : ((e + 1) % 2 == 0) = false := Bool.eq_false_iff.mpr heven
         rw [heven_f]
         simp only [Bool.false_eq_true, ↓reduceIte]
         rw [Nat.mul_mod, mod_pow_two_mul, Nat.mul_mod_mod, ← Nat.mul_mod]
-        have h_div : 2 * ((e + 1) / 2) + 1 = e + 1 := by omega
         have h_pow : a * a ^ (2 * ((e + 1) / 2)) = a ^ (e + 1) := by
-          rw [← Nat.pow_succ', h_div]
+          rw [← Nat.pow_succ']
+          exact congrArg (fun k => a ^ k) (by omega)
         rw [h_pow]
 
 /-- 7. Critère exécutable de témoin de Proth : a^((p-1)/2) ≡ p - 1 [MOD p] -/
