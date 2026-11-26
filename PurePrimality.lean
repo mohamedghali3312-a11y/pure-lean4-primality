@@ -172,7 +172,9 @@ theorem modPow_correct (a e m : Nat) (hm : 1 < m) : modPow a e m = (a ^ e) % m :
       · rw [heven]
         simp only [↓reduceIte]
         rw [mod_pow_two_mul]
-        exact congrArg (fun k => a ^ k % m) (by omega)
+        have h_mod : (e + 1) % 2 = 0 := by simpa using heven
+        have h_div : 2 * ((e + 1) / 2) = e + 1 := Nat.mul_div_cancel' (Nat.dvd_of_mod_eq_zero h_mod)
+        exact congrArg (fun k => a ^ k % m) h_div
       · have heven_f : ((e + 1) % 2 == 0) = false := Bool.eq_false_iff.mpr heven
         rw [heven_f]
         simp only [Bool.false_eq_true, ↓reduceIte]
