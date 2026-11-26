@@ -144,14 +144,7 @@ decreasing_by
   exact Nat.div_lt_self (Nat.zero_lt_succ _) (by decide)
 
 theorem mod_pow_two_mul (a k m : Nat) : (((a * a) % m) ^ k) % m = (a ^ (2 * k)) % m := by
-  induction k with
-  | zero => simp
-  | succ k ih =>
-    rw [Nat.pow_succ, Nat.mul_mod, ih, Nat.mod_mul_mod, ← Nat.mul_mod]
-    have h_exp : 2 * (k + 1) = 2 * k + 2 := by omega
-    rw [h_exp, Nat.pow_add, Nat.pow_two]
-    have h_assoc : a ^ (2 * k) * (a * a) = a ^ (2 * k) * a * a := (Nat.mul_assoc _ _ _).symm
-    rw [h_assoc]
+  rw [← Nat.pow_mod, ← Nat.pow_two, ← Nat.pow_mul]
 
 /-- 6. Théorème de correction : modPow calcule exactement (a^e) % m -/
 theorem modPow_correct (a e m : Nat) (hm : 1 < m) : modPow a e m = (a ^ e) % m := by
