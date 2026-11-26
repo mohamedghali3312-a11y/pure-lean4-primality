@@ -125,8 +125,7 @@ theorem miller_rabin_sqrt_one {p x : Nat} (hp : IsPrime p) (hx_pos : 1 ≤ x) (h
       have : p * 2 ≤ p * k := Nat.mul_le_mul_left p (by omega)
       omega
     have hk1 : k = 1 := by omega
-    subst hk1
-    rw [Nat.mul_one] at hk
+    rw [hk1, Nat.mul_one] at hk
     omega
 
 /-- 5. Exponentiation modulaire binaire rapide O(log e) -/
