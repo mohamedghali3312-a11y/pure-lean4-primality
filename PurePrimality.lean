@@ -50,7 +50,7 @@ theorem dvd_mod_mul_of_dvd {p q x b : Nat} (hq_pos : 0 < q)
   have h_assoc : q * (x / q) * b = (q * b) * (x / q) := by
     rw [Nat.mul_assoc, Nat.mul_comm (x / q) b, ← Nat.mul_assoc]
   rw [h_assoc]
-  exact Nat.dvd_mul_right (q * b) (x / q)
+  exact Nat.dvd_trans hqb (Nat.dvd_mul_right (q * b) (x / q))
 
 /-- 2. Lemme d'Euclide en Lean 4 pur (descente complète dans Nat, sans Int ni Bézout) -/
 theorem euclid_lemma {p a b : Nat} (hp : IsPrime p) (hab : p ∣ a * b) : p ∣ a ∨ p ∣ b := by
