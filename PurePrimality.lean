@@ -1,5 +1,3 @@
-import PurePrimality
-
 namespace PrimalityBenchmark
 open PurePrimality
 
