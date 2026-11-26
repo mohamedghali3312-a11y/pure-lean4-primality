@@ -110,24 +110,25 @@ theorem mod_cancel_left {p a x y : Nat} (hp : IsPrime p) (hpa : ¬ (p ∣ a))
 /-- 4. Lemme des racines carrées de 1 de Miller-Rabin -/
 theorem miller_rabin_sqrt_one {p x : Nat} (hp : IsPrime p) (hx_pos : 1 ≤ x) (hx_lt : x < p)
     (hdvd : p ∣ (x - 1) * (x + 1)) : x = 1 ∨ x = p - 1 := by
-  have hp_pos : 0 < p := Nat.lt_of_lt_of_le (by decide) hp.1
   rcases euclid_lemma hp hdvd with h_minus | h_plus
   · left
     rcases h_minus with ⟨k, hk⟩
-    rcases Nat.eq_zero_or_pos k with rfl | hk_pos
-    · omega
-    · have : p ≤ p * k := Nat.le_mul_of_pos_right p hk_pos
+    cases k with
+    | zero => simp at hk; omega
+    | succ k =>
+      have : p ≤ p * (k + 1) := Nat.le_mul_of_pos_right p (Nat.zero_lt_succ k)
       omega
   · right
     rcases h_plus with ⟨k, hk⟩
-    have hk_ne0 : k ≠ 0 := by intro h0; subst h0; omega
-    have hk_lt2 : k < 2 := by
-      by_contra hge2
-      have : p * 2 ≤ p * k := Nat.mul_le_mul_left p (by omega)
-      omega
-    have hk1 : k = 1 := by omega
-    rw [hk1, Nat.mul_one] at hk
-    omega
+    cases k with
+    | zero => simp at hk
+    | succ k =>
+      cases k with
+      | zero => simp at hk; omega
+      | succ k =>
+        have : p * 2 ≤ p * (k + 2) := Nat.mul_le_mul_left p (by omega)
+        omega
+
 
 /-- 5. Exponentiation modulaire binaire rapide O(log e) -/
 def modPow (a e m : Nat) : Nat :=
