@@ -57,7 +57,7 @@ theorem euclid_lemma {p a b : Nat} (hp : IsPrime p) (hab : p ∣ a * b) : p ∣ 
   by_cases hpa : p ∣ a
   · exact Or.inl hpa
   · right
-    have hp_pos : 0 < p := by have := hp.1; omega
+    have hp_pos : 0 < p := Nat.lt_of_lt_of_le (by decide) hp.1
     have hr0_lt : a % p < p := Nat.mod_lt a hp_pos
     have hr0_pos : 0 < a % p := by
       rcases Nat.eq_zero_or_pos (a % p) with hz | hpos
@@ -72,9 +72,11 @@ theorem euclid_lemma {p a b : Nat} (hp : IsPrime p) (hab : p ∣ a * b) : p ∣ 
     | ind m ih =>
       intro hm_pos hm_lt hmb
       by_cases hm_dvd_p : m ∣ p
-      · rcases hp.2 m hm_dvd_p with rfl | rfl
-        · simpa using hmb
-        · omega
+      · rcases hp.2 m hm_dvd_p with hm1 | hmp
+        · rw [hm1, Nat.one_mul] at hmb
+          exact hmb
+        · exfalso
+          exact Nat.ne_of_lt hm_lt hmp
       · have hr_lt : p % m < m := Nat.mod_lt p hm_pos
         have hr_pos : 0 < p % m := by
           rcases Nat.eq_zero_or_pos (p % m) with hz | hpos
@@ -82,7 +84,7 @@ theorem euclid_lemma {p a b : Nat} (hp : IsPrime p) (hab : p ∣ a * b) : p ∣ 
           · exact hpos
         have hr_dvd : p ∣ (p % m) * b :=
           dvd_mod_mul_of_dvd hm_pos (Nat.dvd_mul_right p b) hmb
-        exact ih (p % m) hr_lt hr_pos (by omega) hr_dvd
+        exact ih (p % m) hr_lt hr_pos (Nat.lt_trans hr_lt hm_lt) hr_dvd
 
 /-- 3. Annulation modulaire modulo p premier -/
 theorem mod_cancel_left {p a x y : Nat} (hp : IsPrime p) (hpa : ¬ (p ∣ a))
