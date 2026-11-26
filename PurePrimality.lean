@@ -102,6 +102,13 @@ theorem mod_cancel_left {p a x y : Nat} (hp : IsPrime p) (hpa : ¬ (p ∣ a))
     have h2 : a * u = p * (a * u / p) + (a * u) % p := (Nat.div_add_mod (a * u) p).symm
     rw [Nat.mul_sub_left_distrib]
     omega
+  rcases euclid_lemma hp hp_dvd_diff with h_a | h_vu
+  · exact absurd h_a hpa
+  · rcases h_vu with ⟨k, hk⟩
+    have hv : v = u + p * k := by omega
+    rw [hv, Nat.add_mul_mod_self_left]
+
+    omega
 
   rcases euclid_lemma hp hp_dvd_diff with h_a | h_vu
   · exact absurd h_a hpa
