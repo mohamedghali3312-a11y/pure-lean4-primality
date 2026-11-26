@@ -141,7 +141,7 @@ def modPow (a e m : Nat) : Nat :=
         (a * half) % m
 termination_by e
 decreasing_by
-  omega
+  exact Nat.div_lt_self (Nat.zero_lt_succ _) (by decide)
 
 theorem mod_pow_two_mul (a k m : Nat) : (((a * a) % m) ^ k) % m = (a ^ (2 * k)) % m := by
   induction k with
@@ -164,7 +164,7 @@ theorem modPow_correct (a e m : Nat) (hm : 1 < m) : modPow a e m = (a ^ e) % m :
     cases e with
     | zero => simp
     | succ e =>
-      have h_lt : (e + 1) / 2 < e + 1 := by omega
+      have h_lt : (e + 1) / 2 < e + 1 := Nat.div_lt_self (Nat.zero_lt_succ e) (by decide)
       have h_ih := ih ((e + 1) / 2) h_lt ((a * a) % m)
       dsimp only
       rw [h_ih]
@@ -172,14 +172,26 @@ theorem modPow_correct (a e m : Nat) (hm : 1 < m) : modPow a e m = (a ^ e) % m :
       · rw [heven]
         simp only [↓reduceIte]
         rw [mod_pow_two_mul]
-        exact congrArg (fun k => a ^ k % m) (by omega)
+        have h_mod : (e + 1) % 2 = 0 := by simpa using heven
+        have h_div : 2 * ((e + 1) / 2) = e + 1 := Nat.mul_div_cancel' (Nat.dvd_of_mod_eq_zero h_mod)
+        rw [h_div]
       · have heven_f : ((e + 1) % 2 == 0) = false := Bool.eq_false_iff.mpr heven
         rw [heven_f]
         simp only [Bool.false_eq_true, ↓reduceIte]
         rw [Nat.mul_mod, mod_pow_two_mul, Nat.mul_mod_mod, ← Nat.mul_mod]
+        have h_div : 2 * ((e + 1) / 2) + 1 = e + 1 := by
+          have h_rem : (e + 1) % 2 = 1 := by
+            have hlt2 : (e + 1) % 2 < 2 := Nat.mod_lt (e + 1) (by decide)
+            have hne0 : (e + 1) % 2 ≠ 0 := by
+              intro hz
+              apply heven
+              simp [hz]
+            omega
+          have h_dm := Nat.div_add_mod (e + 1) 2
+          omega
         have h_pow : a * a ^ (2 * ((e + 1) / 2)) = a ^ (e + 1) := by
           rw [← Nat.pow_succ']
-          exact congrArg (fun k => a ^ k) (by omega)
+          exact congrArg (fun k => a ^ k) h_div
         rw [h_pow]
 
 /-- 7. Critère exécutable de témoin de Proth : a^((p-1)/2) ≡ p - 1 [MOD p] -/
