@@ -23,11 +23,12 @@ theorem fermat_F3_modPow_exact :
     modPowFuel 64 3 128 257 = 256 := by
   decide
 
-/-- Banc d'essai natif GMP 64 bits (exécuté en < 1 ms) -/
+-- Banc d'essai natif GMP 64 bits (exécuté en < 1 ms)
 #eval isProthWitness 5 (3 * 2 ^ 30 + 1)
 #eval isProthWitness 31 (15 * 2 ^ 27 + 1)
 #eval isProthWitness 5 (27 * 2 ^ 56 + 1)
 #eval isProthWitness 3 (2 ^ 32 + 1)
+
 
 #print axioms proth_prime_769_certified
 #print axioms fermat_F3_257_certified
