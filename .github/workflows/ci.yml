@@ -1,0 +1,21 @@
+name: Pure Lean 4 Primality & Benchmark CI
+on: [push, pull_request]
+jobs:
+  verify-and-benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          build: false
+      - name: Compile PurePrimality & Run 64-bit Benchmark
+        run: |
+          LEAN_PATH=. lean -o PurePrimality.olean PurePrimality.lean
+          START=$(date +%s%N)
+          OUT=$(LEAN_PATH=. lean BenchmarkPrimality.lean 2>&1)
+          END=$(date +%s%N)
+          ELAPSED_MS=$(( (END - START) / 1000000 ))
+          echo "$OUT"
+          echo "Benchmark & Kernel Proof Execution Time: ${ELAPSED_MS} ms"
+          echo "$OUT" | grep -Eq "sorryAx|ofReduceBool|trustCompiler" && exit 1 || echo "ALL 64-BIT PROTH PRIMALITY PROOFS VERIFIED"
