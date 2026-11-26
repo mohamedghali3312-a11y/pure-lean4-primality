@@ -147,7 +147,7 @@ theorem mod_pow_two_mul (a k m : Nat) : (((a * a) % m) ^ k) % m = (a ^ (2 * k)) 
   induction k with
   | zero => simp
   | succ k ih =>
-    rw [Nat.pow_succ, Nat.mul_mod, ih, ← Nat.mul_mod]
+    rw [Nat.pow_succ, Nat.mul_mod, ih, Nat.mod_mul_mod, ← Nat.mul_mod]
     have h_exp : 2 * (k + 1) = 2 * k + 2 := by omega
     rw [h_exp, Nat.pow_add, Nat.pow_two]
     have h_assoc : a ^ (2 * k) * (a * a) = a ^ (2 * k) * a * a := (Nat.mul_assoc _ _ _).symm
@@ -172,9 +172,7 @@ theorem modPow_correct (a e m : Nat) (hm : 1 < m) : modPow a e m = (a ^ e) % m :
       · rw [heven]
         simp only [↓reduceIte]
         rw [mod_pow_two_mul]
-        have h_mod : (e + 1) % 2 = 0 := by simpa using heven
-        have h_div : 2 * ((e + 1) / 2) = e + 1 := Nat.mul_div_cancel' (Nat.dvd_of_mod_eq_zero h_mod)
-        rw [h_div]
+        exact congrArg (fun k => a ^ k % m) (by omega)
       · have heven_f : ((e + 1) % 2 == 0) = false := Bool.eq_false_iff.mpr heven
         rw [heven_f]
         simp only [Bool.false_eq_true, ↓reduceIte]
