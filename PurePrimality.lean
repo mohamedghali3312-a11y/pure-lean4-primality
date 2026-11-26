@@ -97,10 +97,12 @@ theorem mod_cancel_left {p a x y : Nat} (hp : IsPrime p) (hpa : ¬ (p ∣ a))
   have hau_le_hav : a * u ≤ a * v := Nat.mul_le_mul_left a huv
   have hp_dvd_diff : p ∣ a * (v - u) := by
     rw [Nat.mul_sub_left_distrib]
-    apply Nat.dvd_of_mod_eq_zero
+    refine ⟨a * v / p - a * u / p, ?_⟩
     have h1 : a * v = p * (a * v / p) + (a * v) % p := (Nat.div_add_mod (a * v) p).symm
     have h2 : a * u = p * (a * u / p) + (a * u) % p := (Nat.div_add_mod (a * u) p).symm
+    rw [Nat.mul_sub_left_distrib]
     omega
+
   rcases euclid_lemma hp hp_dvd_diff with h_a | h_vu
   · exact absurd h_a hpa
   · rcases h_vu with ⟨k, hk⟩
