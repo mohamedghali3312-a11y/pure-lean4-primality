@@ -175,7 +175,7 @@ theorem modPow_correct (a e m : Nat) (hm : 1 < m) : modPow a e m = (a ^ e) % m :
       · have heven_f : ((e + 1) % 2 == 0) = false := Bool.eq_false_iff.mpr heven
         rw [heven_f]
         simp only [Bool.false_eq_true, ↓reduceIte]
-        rw [Nat.mul_mod, mod_pow_two_mul, ← Nat.mul_mod]
+        rw [Nat.mul_mod, mod_pow_two_mul, Nat.mul_mod_mod, ← Nat.mul_mod]
         have h_div : 2 * ((e + 1) / 2) + 1 = e + 1 := by omega
         have h_pow : a * a ^ (2 * ((e + 1) / 2)) = a ^ (e + 1) := by
           rw [← Nat.pow_succ', h_div]
