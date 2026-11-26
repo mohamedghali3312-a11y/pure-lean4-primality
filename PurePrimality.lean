@@ -190,9 +190,18 @@ theorem modPow_correct (a e m : Nat) (hm : 1 < m) : modPow a e m = (a ^ e) % m :
           exact congrArg (fun k => a ^ k) h_div
         rw [h_pow]
 
+/-- Récursion structurelle pour évaluation symbolique instantanée dans le noyau (decide) -/
+def modPowFuel : Nat → Nat → Nat → Nat → Nat
+  | 0, _, _, _ => 1
+  | _ + 1, _, 0, m => 1 % m
+  | fuel + 1, a, e, m =>
+    let half := modPowFuel fuel ((a * a) % m) (e / 2) m
+    if e % 2 == 0 then half else (a * half) % m
+
 /-- 7. Critère exécutable de témoin de Proth : a^((p-1)/2) ≡ p - 1 [MOD p] -/
 def isProthWitness (a p : Nat) : Bool :=
-  2 < p && p % 2 == 1 && modPow a ((p - 1) / 2) p == p - 1
+  2 < p && p % 2 == 1 && modPowFuel p a ((p - 1) / 2) p == p - 1
+
 
 #print axioms exists_prime_factor
 #print axioms euclid_lemma
