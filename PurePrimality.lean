@@ -200,7 +200,8 @@ def modPowFuel : Nat → Nat → Nat → Nat → Nat
 
 /-- 7. Critère exécutable de témoin de Proth : a^((p-1)/2) ≡ p - 1 [MOD p] -/
 def isProthWitness (a p : Nat) : Bool :=
-  2 < p && p % 2 == 1 && modPowFuel p a ((p - 1) / 2) p == p - 1
+  2 < p && p % 2 == 1 && modPowFuel 64 a ((p - 1) / 2) p == p - 1
+
 
 
 #print axioms exists_prime_factor
