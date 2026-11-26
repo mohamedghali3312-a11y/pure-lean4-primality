@@ -108,14 +108,6 @@ theorem mod_cancel_left {p a x y : Nat} (hp : IsPrime p) (hpa : ¬ (p ∣ a))
     have hv : v = u + p * k := by omega
     rw [hv, Nat.add_mul_mod_self_left]
 
-    omega
-
-  rcases euclid_lemma hp hp_dvd_diff with h_a | h_vu
-  · exact absurd h_a hpa
-  · rcases h_vu with ⟨k, hk⟩
-    have hv : v = u + p * k := by omega
-    rw [hv, Nat.add_mul_mod_self_left]
-
 /-- 4. Lemme des racines carrées de 1 de Miller-Rabin -/
 theorem miller_rabin_sqrt_one {p x : Nat} (hp : IsPrime p) (hx_pos : 1 ≤ x) (hx_lt : x < p)
     (hdvd : p ∣ (x - 1) * (x + 1)) : x = 1 ∨ x = p - 1 := by
