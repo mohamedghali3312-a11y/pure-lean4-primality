@@ -110,6 +110,7 @@ theorem mod_cancel_left {p a x y : Nat} (hp : IsPrime p) (hpa : ¬ (p ∣ a))
 /-- 4. Lemme des racines carrées de 1 de Miller-Rabin -/
 theorem miller_rabin_sqrt_one {p x : Nat} (hp : IsPrime p) (hx_pos : 1 ≤ x) (hx_lt : x < p)
     (hdvd : p ∣ (x - 1) * (x + 1)) : x = 1 ∨ x = p - 1 := by
+  have hp_pos : 0 < p := Nat.lt_of_lt_of_le (by decide) hp.1
   rcases euclid_lemma hp hdvd with h_minus | h_plus
   · left
     rcases h_minus with ⟨k, hk⟩
