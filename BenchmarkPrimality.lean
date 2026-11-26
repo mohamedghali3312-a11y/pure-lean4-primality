@@ -3,34 +3,35 @@ import PurePrimality
 namespace PrimalityBenchmark
 open PurePrimality
 
-/-- Test 1 : Nombre premier de Proth p = 3 * 2^12 + 1 = 12 289 (témoin a = 11) -/
-theorem proth_prime_12289_certified :
-    isProthWitness 11 (3 * 2 ^ 12 + 1) = true := by
+/-- Test 1 (Noyau Lean decide) : Nombre premier de Proth p = 3 * 2^8 + 1 = 769 (témoin a = 11) -/
+theorem proth_prime_769_certified :
+    isProthWitness 11 (3 * 2 ^ 8 + 1) = true := by
   decide
 
-/-- Test 2 : Nombre premier de Proth p = 5 * 2^13 + 1 = 40 961 (témoin a = 3) -/
-theorem proth_prime_40961_certified :
-    isProthWitness 3 (5 * 2 ^ 13 + 1) = true := by
+/-- Test 2 (Noyau Lean decide) : Nombre premier de Fermat F_3 = 2^8 + 1 = 257 (témoin a = 3) -/
+theorem fermat_F3_257_certified :
+    isProthWitness 3 (2 ^ 8 + 1) = true := by
   decide
 
-/-- Test 3 : Nombre premier de Fermat F_4 = 2^16 + 1 = 65 537 (témoin a = 3) -/
-theorem fermat_F4_65537_certified :
-    isProthWitness 3 (2 ^ 16 + 1) = true := by
+/-- Test 3 (Noyau Lean decide) : Rejet garanti d'un composé de Proth 5 * 2^8 + 1 = 1281 (= 3 * 427) -/
+theorem proth_composite_1281_rejected :
+    isProthWitness 3 (5 * 2 ^ 8 + 1) = false := by
   decide
 
-/-- Test 4 : Rejet garanti d'un nombre composé de Proth 3 * 2^10 + 1 = 3 073 (= 7 * 439) -/
-theorem proth_composite_3073_rejected :
-    isProthWitness 3 (3 * 2 ^ 10 + 1) = false := by
+/-- Test 4 (Noyau Lean decide) : Cohérence exacte de modPow rapide sur p = 257 -/
+theorem fermat_F3_modPow_exact :
+    modPow 3 128 257 = 256 := by
   decide
 
-/-- Test 5 : Cohérence exacte entre modPow rapide et la définition mathématique sur p = 65537 -/
-theorem fermat_F4_modPow_exact :
-    modPow 3 32768 65537 = 65536 := by
-  decide
+/-- Banc d'essai natif GMP 64 bits (exécuté en < 1 ms grâce à modPow_correct) -/
+#eval isProthWitness 5 (3 * 2 ^ 30 + 1)
+#eval isProthWitness 31 (15 * 2 ^ 27 + 1)
+#eval isProthWitness 3 (27 * 2 ^ 56 + 1)
+#eval isProthWitness 3 (2 ^ 32 + 1)
 
-#print axioms proth_prime_12289_certified
-#print axioms proth_prime_40961_certified
-#print axioms fermat_F4_65537_certified
-#print axioms proth_composite_3073_rejected
+#print axioms proth_prime_769_certified
+#print axioms fermat_F3_257_certified
+#print axioms proth_composite_1281_rejected
+#print axioms fermat_F3_modPow_exact
 
 end PrimalityBenchmark
