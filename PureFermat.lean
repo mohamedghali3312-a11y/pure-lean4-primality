@@ -85,32 +85,32 @@ theorem nodup_range1_perm : ∀ (n : Nat) (l : List Nat),
     | nil => exact List.Perm.refl []
     | cons _ _ => simp at hlen
   | n + 1, l, hnodup, hlen, hmem => by
-    have hin : (n + 1) ∈ l := by
-      by_contra hnot
+    by_cases hin : (n + 1) ∈ l
+    · have hperm_head : l.Perm ((n + 1) :: l.erase (n + 1)) := List.perm_cons_erase hin
+      have hlen' : (l.erase (n + 1)).length = n := by
+        have := hperm_head.length_eq
+        simp at this
+        omega
+      have hnodup' : (l.erase (n + 1)).Nodup := (hnodup.perm hperm_head).of_cons
+      have hmem' : ∀ x ∈ l.erase (n + 1), 1 ≤ x ∧ x ≤ n := by
+        intro x hx
+        have hx_in : x ∈ l := List.mem_of_mem_erase hx
+        have hx_ne : x ≠ n + 1 := fun h => (List.nodup_cons.mp (hnodup.perm hperm_head)).1 (h ▸ hx)
+        have hb := hmem x hx_in
+        omega
+      have ih := nodup_range1_perm n (l.erase (n + 1)) hnodup' hlen' hmem'
+      have hstep : ((n + 1) :: l.erase (n + 1)).Perm ((n + 1) :: range1 n) := ih.cons (n + 1)
+      have hrot : ((n + 1) :: range1 n).Perm (range1 n ++ [n + 1]) :=
+        List.perm_append_comm
+      exact hperm_head.trans (hstep.trans hrot)
+    · exfalso
       have hmem' : ∀ x ∈ l, 1 ≤ x ∧ x ≤ n := by
         intro x hx
         have hb := hmem x hx
-        have hne : x ≠ n + 1 := fun h => hnot (h ▸ hx)
+        have hne : x ≠ n + 1 := fun h => hin (h ▸ hx)
         omega
       have hle := nodup_length_le n l hnodup hmem'
       omega
-    have hperm_head : l.Perm ((n + 1) :: l.erase (n + 1)) := List.perm_cons_erase hin
-    have hlen' : (l.erase (n + 1)).length = n := by
-      have := hperm_head.length_eq
-      simp at this
-      omega
-    have hnodup' : (l.erase (n + 1)).Nodup := (hnodup.perm hperm_head).of_cons
-    have hmem' : ∀ x ∈ l.erase (n + 1), 1 ≤ x ∧ x ≤ n := by
-      intro x hx
-      have hx_in : x ∈ l := List.mem_of_mem_erase hx
-      have hx_ne : x ≠ n + 1 := fun h => (List.nodup_cons.mp (hnodup.perm hperm_head)).1 (h ▸ hx)
-      have hb := hmem x hx_in
-      omega
-    have ih := nodup_range1_perm n (l.erase (n + 1)) hnodup' hlen' hmem'
-    have hstep : ((n + 1) :: l.erase (n + 1)).Perm ((n + 1) :: range1 n) := ih.cons (n + 1)
-    have hrot : ((n + 1) :: range1 n).Perm (range1 n ++ [n + 1]) :=
-      List.perm_append_comm
-    exact hperm_head.trans (hstep.trans hrot)
 
 /-- Lemme autonome : une fonction injective sur une liste sans doublon préserve Nodup -/
 theorem nodup_map_inj {f : Nat → Nat} : ∀ (l : List Nat),
