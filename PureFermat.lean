@@ -127,7 +127,7 @@ theorem nodup_map_inj {f : Nat → Nat} : ∀ (l : List Nat),
     have hxy : x = y := hinj x (List.mem_cons_self ..) y (List.mem_cons_of_mem x hy_in) hfy.symm
     exact hx_not_in (hxy ▸ hy_in)
 
-theorem prime_not_dvd_lt {p k : Nat} (hp : IsPrime p) (hk_pos : 1 ≤ k) (hk_lt : k < p) :
+theorem prime_not_dvd_lt {p k : Nat} (hk_pos : 1 ≤ k) (hk_lt : k < p) :
     ¬ (p ∣ k) := by
   intro hdvd
   have hle : p ≤ k := Nat.le_of_dvd (by omega) hdvd
@@ -148,7 +148,7 @@ theorem prime_not_dvd_fact_pred {p : Nat} (hp : IsPrime p) :
     intro hlt hdvd
     unfold fact at hdvd
     rcases euclid_lemma hp hdvd with h_head | h_tail
-    · exact prime_not_dvd_lt hp (by omega) hlt h_head
+    · exact prime_not_dvd_lt (by omega) hlt h_head
     · exact ih (by omega) h_tail
 
 theorem range1_mem_bounds : ∀ (n x : Nat), x ∈ range1 n → 1 ≤ x ∧ x ≤ n
@@ -165,7 +165,7 @@ theorem range1_nodup : ∀ n : Nat, (range1 n).Nodup
   | n + 1 => by
     unfold range1
     rw [List.nodup_append]
-    refine ⟨range1_nodup n, List.nodup_singleton _, ?_⟩
+    refine ⟨range1_nodup n, by simp, ?_⟩
     intro x hx y hy
     simp at hy
     subst hy
@@ -200,7 +200,7 @@ theorem fermat_little_theorem {p a : Nat} (hp : IsPrime p) (hpa : ¬ (p ∣ a)) 
       have hdvd : p ∣ a * k := Nat.dvd_of_mod_eq_zero hz
       rcases euclid_lemma hp hdvd with h_a | h_k
       · exact hpa h_a
-      · exact prime_not_dvd_lt hp hkb.1 (by omega) h_k
+      · exact prime_not_dvd_lt hkb.1 (by omega) h_k
     omega
   have hnodup_res : resList.Nodup := by
     apply nodup_map_inj (range1 (p - 1)) (range1_nodup (p - 1))
