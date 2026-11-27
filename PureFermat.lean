@@ -117,7 +117,7 @@ theorem nodup_map_inj {f : Nat → Nat} : ∀ (l : List Nat),
     l.Nodup → (∀ x ∈ l, ∀ y ∈ l, f x = f y → x = y) → (l.map f).Nodup
   | [], _, _ => List.nodup_nil
   | x :: xs, hnodup, hinj => by
-    rw [List.nodup_cons] at hnodup ⊢
+    simp only [List.map_cons, List.nodup_cons] at hnodup ⊢
     rcases hnodup with ⟨hx_not_in, hxs_nodup⟩
     refine ⟨?_, nodup_map_inj xs hxs_nodup (fun u hu v hv heq =>
       hinj u (List.mem_cons_of_mem x hu) v (List.mem_cons_of_mem x hv) heq)⟩
