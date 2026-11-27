@@ -101,7 +101,7 @@ theorem nodup_range1_perm : ∀ (n : Nat) (l : List Nat),
       have ih := nodup_range1_perm n (l.erase (n + 1)) hnodup' hlen' hmem'
       have hstep : ((n + 1) :: l.erase (n + 1)).Perm ((n + 1) :: range1 n) := ih.cons (n + 1)
       have hrot : ((n + 1) :: range1 n).Perm (range1 n ++ [n + 1]) :=
-        List.perm_append_comm
+        List.perm_append_comm (l₁ := [n + 1]) (l₂ := range1 n)
       exact hperm_head.trans (hstep.trans hrot)
     · exfalso
       have hmem' : ∀ x ∈ l, 1 ≤ x ∧ x ≤ n := by
