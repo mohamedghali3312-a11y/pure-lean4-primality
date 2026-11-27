@@ -12,6 +12,7 @@ jobs:
       - name: Compile PurePrimality & Run 64-bit Benchmark
         run: |
           LEAN_PATH=. lean -o PurePrimality.olean PurePrimality.lean
+          LEAN_PATH=. lean PureFermat.lean
           START=$(date +%s%N)
           LEAN_PATH=. lean BenchmarkPrimality.lean
           END=$(date +%s%N)
