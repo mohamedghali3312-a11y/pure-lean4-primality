@@ -112,6 +112,21 @@ theorem nodup_range1_perm : ∀ (n : Nat) (l : List Nat),
       List.perm_append_comm
     exact hperm_head.trans (hstep.trans hrot)
 
+/-- Lemme autonome : une fonction injective sur une liste sans doublon préserve Nodup -/
+theorem nodup_map_inj {f : Nat → Nat} : ∀ (l : List Nat),
+    l.Nodup → (∀ x ∈ l, ∀ y ∈ l, f x = f y → x = y) → (l.map f).Nodup
+  | [], _, _ => List.nodup_nil
+  | x :: xs, hnodup, hinj => by
+    rw [List.nodup_cons] at hnodup ⊢
+    rcases hnodup with ⟨hx_not_in, hxs_nodup⟩
+    refine ⟨?_, nodup_map_inj xs hxs_nodup (fun u hu v hv heq =>
+      hinj u (List.mem_cons_of_mem x hu) v (List.mem_cons_of_mem x hv) heq)⟩
+    intro hmem_map
+    rw [List.mem_map] at hmem_map
+    rcases hmem_map with ⟨y, hy_in, hfy⟩
+    have hxy : x = y := hinj x (List.mem_cons_self ..) y (List.mem_cons_of_mem x hy_in) hfy.symm
+    exact hx_not_in (hxy ▸ hy_in)
+
 theorem prime_not_dvd_lt {p k : Nat} (hp : IsPrime p) (hk_pos : 1 ≤ k) (hk_lt : k < p) :
     ¬ (p ∣ k) := by
   intro hdvd
@@ -157,15 +172,12 @@ theorem range1_nodup : ∀ n : Nat, (range1 n).Nodup
     have hb := range1_mem_bounds n x hx
     omega
 
-def mappedMul (a : Nat) (l : List Nat) : List Nat :=
-  l.map (fun k => a * k)
-
-theorem prodList_mappedMul (a : Nat) : ∀ l : List Nat,
-    prodList (mappedMul a l) = a ^ l.length * prodList l
-  | [] => by simp [mappedMul, prodList]
+theorem prodList_map_mul (a : Nat) : ∀ l : List Nat,
+    prodList (l.map (fun k => a * k)) = a ^ l.length * prodList l
+  | [] => by simp [prodList]
   | x :: xs => by
-    simp only [mappedMul, List.map_cons, prodList, List.length_cons]
-    rw [prodList_mappedMul a xs]
+    simp only [List.map_cons, prodList, List.length_cons]
+    rw [prodList_map_mul a xs]
     calc
       (a * x) * (a ^ xs.length * prodList xs)
         = (a * a ^ xs.length) * (x * prodList xs) := by ac_rfl
@@ -191,7 +203,7 @@ theorem fermat_little_theorem {p a : Nat} (hp : IsPrime p) (hpa : ¬ (p ∣ a)) 
       · exact prime_not_dvd_lt hp hkb.1 (by omega) h_k
     omega
   have hnodup_res : resList.Nodup := by
-    apply List.Nodup.map_on _ (range1_nodup (p - 1))
+    apply nodup_map_inj (range1 (p - 1)) (range1_nodup (p - 1))
     intro x hx y hy heq
     have hxb := range1_mem_bounds (p - 1) x hx
     have hyb := range1_mem_bounds (p - 1) y hy
@@ -204,14 +216,14 @@ theorem fermat_little_theorem {p a : Nat} (hp : IsPrime p) (hpa : ¬ (p ∣ a)) 
     nodup_range1_perm (p - 1) resList hnodup_res hlen_res hbounds
   have hprod_eq : prodList resList % p = prodList (range1 (p - 1)) % p :=
     congrArg (fun z => z % p) (prodList_perm hperm)
-  have hmod_map : prodList resList % p = prodList (mappedMul a (range1 (p - 1))) % p := by
-    dsimp [resList, mappedMul]
+  have hmod_map : prodList resList % p = prodList ((range1 (p - 1)).map (fun k => a * k)) % p := by
+    dsimp [resList]
     induction (range1 (p - 1)) with
     | nil => rfl
     | cons x xs ih =>
       simp only [List.map_cons, prodList]
       rw [Nat.mul_mod, Nat.mod_mod, ih, ← Nat.mul_mod]
-  rw [hmod_map, prodList_mappedMul, length_range1, prodList_range1] at hprod_eq
+  rw [hmod_map, prodList_map_mul, length_range1, prodList_range1] at hprod_eq
   have hcomm : (fact (p - 1) * a ^ (p - 1)) % p = (fact (p - 1) * 1) % p := by
     simpa [Nat.mul_comm, Nat.one_mul] using hprod_eq
   have hres := mod_cancel_left hp (prime_not_dvd_fact_pred hp) hcomm
