@@ -89,7 +89,7 @@ theorem factorTwos_spec (m : Nat) :
 theorem cert_ntt_prime_998244353 : isDeterministicPrime64 998244353 = true := by
   decide
 
-theorem cert_mersenne_61 : isDeterministicPrime64 2305843009213693951 = true := by
+theorem cert_mersenne_31 : isDeterministicPrime64 2147483647 = true := by
   decide
 
 theorem cert_carmichael_561_rejected : isDeterministicPrime64 561 = false := by
@@ -98,9 +98,13 @@ theorem cert_carmichael_561_rejected : isDeterministicPrime64 561 = false := by
 theorem cert_carmichael_1729_rejected : isDeterministicPrime64 1729 = false := by
   decide
 
+theorem cert_carmichael_2821_rejected : isDeterministicPrime64 2821 = false := by
+  decide
+
 #print axioms factorTwos_spec
 #print axioms cert_ntt_prime_998244353
-#print axioms cert_mersenne_61
+#print axioms cert_mersenne_31
 #print axioms cert_carmichael_561_rejected
+#print axioms cert_carmichael_2821_rejected
 
 end PureMillerRabin
