@@ -1,16 +1,5 @@
 namespace PureMillerRabin
 
-/-- Exponentiation modulaire binaire exacte par récursion structurelle (0 float) -/
-def modPowAux : Nat → Nat → Nat → Nat → Nat
-  | 0, _, _, acc => acc
-  | fuel + 1, b, e, acc =>
-    if e == 0 then acc
-    else
-      let acc' := if e % 2 == 1 then (acc * b) % mod else acc
-      modPowAux fuel ((b * b) % mod) (e / 2) acc'
-where
-  mod := 1 -- placeholder non utilisé, remplacé par paramètre explicite ci-dessous
-
 def powModLoop (mod : Nat) : Nat → Nat → Nat → Nat → Nat
   | 0, _, _, acc => acc % mod
   | fuel + 1, b, e, acc =>
@@ -23,7 +12,6 @@ def modPow (base exp mod : Nat) : Nat :=
   if mod ≤ 1 then 0
   else powModLoop mod (exp + 1) (base % mod) exp 1
 
-/-- Décomposition structurelle exacte m = 2^s * d avec d impair -/
 def factorTwosLoop : Nat → Nat → Nat → Nat × Nat
   | 0, s, d => (s, d)
   | fuel + 1, s, d =>
@@ -34,7 +22,6 @@ def factorTwosLoop : Nat → Nat → Nat → Nat × Nat
 def factorTwos (m : Nat) : Nat × Nat :=
   factorTwosLoop m 0 m
 
-/-- Boucle de mise au carré répétée de Miller-Rabin -/
 def checkSquares (x n : Nat) : Nat → Bool
   | 0 => false
   | k + 1 =>
@@ -43,7 +30,6 @@ def checkSquares (x n : Nat) : Nat → Bool
     else if x' == 1 then false
     else checkSquares x' n k
 
-/-- Test d'un témoin fort de Miller-Rabin -/
 def passesWitness (n a : Nat) : Bool :=
   let a' := a % n
   if a' == 0 then true
@@ -56,18 +42,20 @@ def passesWitness (n a : Nat) : Bool :=
       | 0 => false
       | s' + 1 => checkSquares x0 n s'
 
-/-- Les 7 témoins déterministes officiels certifiant tout entier 64-bit (< 2^64) -/
-def witnesses64 : List Nat :=
- 
-
-/-- Test de primalité déterministe 64-bit complet en Lean 4 pur -/
+/-- Test déterministe complet 64-bit avec les 7 témoins officiels (Sinclair) -/
 def isDeterministicPrime64 (n : Nat) : Bool :=
   if n < 2 then false
   else if n == 2 || n == 3 then true
   else if n % 2 == 0 then false
-  else witnesses64.all (passesWitness n)
+  else
+    passesWitness n 2 &&
+    passesWitness n 325 &&
+    passesWitness n 9375 &&
+    passesWitness n 28178 &&
+    passesWitness n 450775 &&
+    passesWitness n 9780504 &&
+    passesWitness n 1795265022
 
-/-- THÉORÈME 1 : La décomposition factorTwosLoop préserve exactement 2^s * d -/
 theorem factorTwosLoop_spec : ∀ (fuel s d : Nat),
     2 ^ (factorTwosLoop fuel s d).1 * (factorTwosLoop fuel s d).2 = 2 ^ s * d
   | 0, s, d => rfl
@@ -96,8 +84,6 @@ theorem factorTwos_spec (m : Nat) :
   rw [factorTwosLoop_spec m 0 m]
   simp
 
-/-- THÉORÈME 2 : Certification formelle exécutable sur des nombres premiers 64-bit
-    et rejet prouvé des nombres pseudo-premiers de Carmichael (561, 1729) -/
 theorem cert_ntt_prime_998244353 : isDeterministicPrime64 998244353 = true := by
   decide
 
