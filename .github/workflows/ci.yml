@@ -13,6 +13,7 @@ jobs:
         run: |
           LEAN_PATH=. lean -o PurePrimality.olean PurePrimality.lean
           LEAN_PATH=. lean PureFermat.lean
+          LEAN_PATH=. lean PureMillerRabin.lean
           START=$(date +%s%N)
           LEAN_PATH=. lean BenchmarkPrimality.lean
           END=$(date +%s%N)
