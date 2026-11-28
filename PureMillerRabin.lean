@@ -8,9 +8,10 @@ def powModLoop (mod : Nat) : Nat → Nat → Nat → Nat → Nat
       let acc' := if e % 2 == 1 then (acc * b) % mod else acc
       powModLoop mod fuel ((b * b) % mod) (e / 2) acc'
 
+/-- Carburant = 64 bits : exact pour tout exposant 64-bit (< 2^64) -/
 def modPow (base exp mod : Nat) : Nat :=
   if mod ≤ 1 then 0
-  else powModLoop mod (exp + 1) (base % mod) exp 1
+  else powModLoop mod 64 (base % mod) exp 1
 
 def factorTwosLoop : Nat → Nat → Nat → Nat × Nat
   | 0, s, d => (s, d)
@@ -19,8 +20,9 @@ def factorTwosLoop : Nat → Nat → Nat → Nat × Nat
     else if d % 2 == 0 then factorTwosLoop fuel (s + 1) (d / 2)
     else (s, d)
 
+/-- Carburant = 64 bits : exact pour tout entier 64-bit (< 2^64) -/
 def factorTwos (m : Nat) : Nat × Nat :=
-  factorTwosLoop m 0 m
+  factorTwosLoop 64 0 m
 
 def checkSquares (x n : Nat) : Nat → Bool
   | 0 => false
@@ -81,7 +83,7 @@ theorem factorTwosLoop_spec : ∀ (fuel s d : Nat),
 theorem factorTwos_spec (m : Nat) :
     2 ^ (factorTwos m).1 * (factorTwos m).2 = m := by
   unfold factorTwos
-  rw [factorTwosLoop_spec m 0 m]
+  rw [factorTwosLoop_spec 64 0 m]
   simp
 
 theorem cert_ntt_prime_998244353 : isDeterministicPrime64 998244353 = true := by
